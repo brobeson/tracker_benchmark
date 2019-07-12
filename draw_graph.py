@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
+import os
 import numpy as np
 import math
 import sys
-from config import *
-from scripts import *
+
+import config
+from scripts.butil import load_results
 
 def main():
     evalTypes = ['OPE']
@@ -14,14 +16,12 @@ def main():
 
     for i in range(len(evalTypes)):
         evalType = evalTypes[i]
-        result_src = RESULT_SRC.format(evalType)
+        result_src = config.RESULT_SRC.format(evalType)
         trackers = os.listdir(result_src)
         scoreList = []
         for t in trackers:
-            try:
-                score = butil.load_scores(evalType, t, testname)
-                scoreList.append(score)
-            except: pass
+            score = load_results.load_scores(evalType, t, testname)
+            scoreList.append(score)
         if graph == 'precision':
             plt = get_precision_graph(scoreList, i, evalType, testname)
         else:
@@ -37,19 +37,19 @@ def get_overlap_graph(scoreList, fignum, evalType, testname):
         result = rankList[i]
         tracker = result[0].tracker
         attr = result[0]
-        if len(attr.successRateList) == len(thresholdSetOverlap):
-            if i < MAXIMUM_LINES:
+        if len(attr.successRateList) == len(config.thresholdSetOverlap):
+            if i < config.MAXIMUM_LINES:
                 ls = '-'
                 if i % 2 == 1:
                     ls = '--'
                 ave = sum(attr.successRateList) / float(len(attr.successRateList))
-                plt.plot(thresholdSetOverlap, attr.successRateList, 
-                    c = LINE_COLORS[i], label='{0} [{1:.2f}]'.format(tracker, ave), lw=2.0, ls = ls)
-            else:
-                plt.plot(thresholdSetOverlap, attr.successRateList, 
-                    label='', alpha=0.5, c='#202020', ls='--')
+                plt.plot(config.thresholdSetOverlap, attr.successRateList, 
+                    c = config.LINE_COLORS[i], label='{0} [{1:.2f}]'.format(tracker, ave), lw=2.0, ls = ls)
+            #else:
+            #    plt.plot(config.thresholdSetOverlap, attr.successRateList, 
+            #        label='', alpha=0.5, c='#202020', ls='--')
         else:
-            print 'err'
+            print('err')
     plt.title('{0}_{1} (sequence average)'.format(evalType, testname.upper()))
     plt.rcParams.update({'axes.titlesize': 'medium'})
     plt.xlabel('Thresholds')
@@ -69,18 +69,18 @@ def get_precision_graph(scoreList, fignum, evalType, testname):
         result = rankList[i]
         tracker = result[0].tracker
         attr = result[0]
-        if len(attr.precisionList) == len(thresholdSetError):
-            if i < MAXIMUM_LINES:
+        if len(attr.precisionList) == len(config.thresholdSetError):
+            if i < config.MAXIMUM_LINES:
                 ls = '-'
                 if i % 2 == 1:
                     ls = '--'
-                plt.plot(thresholdSetError, attr.precisionList, 
-                    c = LINE_COLORS[i], label='{0} [{1:.2f}]'.format(tracker, attr.precisionList[20]), lw=2.0, ls = ls)
-            else:
-                plt.plot(thresholdSetError, attr.precisionList, 
-                    label='', alpha=0.5, c='#202020', ls='--')
+                plt.plot(config.thresholdSetError, attr.precisionList, 
+                    c = config.LINE_COLORS[i], label='{0} [{1:.2f}]'.format(tracker, attr.precisionList[20]), lw=2.0, ls = ls)
+            #else:
+            #    plt.plot(config.thresholdSetError, attr.precisionList, 
+            #        label='', alpha=0.5, c='#202020', ls='--')
         else:
-            print 'err'
+            print('err')
     plt.title('{0}_{1} (precision)'.format(evalType, testname.upper()))
     plt.rcParams.update({'axes.titlesize': 'medium'})
     plt.xlabel('Thresholds')
