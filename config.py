@@ -13,7 +13,8 @@ except:
 
 WORKDIR = os.path.abspath('.')
 
-SEQ_SRC = './data/'
+#SEQ_SRC = './data/'
+SEQ_SRC = os.path.expanduser("~/Videos/otb/")
 
 TRACKER_SRC = './trackers/'
 
@@ -30,7 +31,7 @@ SAVE_IMAGE = False
 USE_INIT_OMIT = True
 
 # sequence configs
-DOWNLOAD_SEQS = True
+DOWNLOAD_SEQS = False
 DOWNLOAD_URL = "http://cvlab.hanyang.ac.kr/tracker_benchmark/seq_new/{0}.zip"
 ATTR_LIST_FILE = 'attr_list.txt'
 ATTR_DESC_FILE = 'attr_desc.txt'
