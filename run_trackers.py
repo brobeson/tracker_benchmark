@@ -1,13 +1,16 @@
 import getopt
 import sys
 import os
-import pdb
 
 import numpy as np
 from PIL import Image
 import config
 import scripts.butil.seq_config
 import scripts.butil.load_results
+import scripts.butil.eval_results
+import scripts.bscripts.run_dmdnet
+from scripts.model.result import Result
+
 
 def main(argv):
     
@@ -77,7 +80,7 @@ def main(argv):
                     #print "\toverlap : {0:02.1f}%".format(attr.overlap),
                     #print "\tfailures : {0:.1f}".format(attr.error)
 
-                if SAVE_RESULT : 
+                if config.SAVE_RESULT : 
                     scripts.butil.load_results.save_scores(attrList, testname)
 
 def run_trackers(trackers, seqs, evalType, shiftTypeSet):
@@ -120,7 +123,7 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
                 if os.path.exists(os.path.join(config.TRACKER_SRC, t)):
                     move_dir = True
                     os.chdir(os.path.join(config.TRACKER_SRC, t))
-                funcName = 'run_{0}(subS, rp, SAVE_IMAGE)'.format(t)
+                funcName = "scripts.bscripts.run_dmdnet.run_{0}(subS, rp, config.SAVE_IMAGE)".format(t)
                 try:
                     res = eval(funcName)
                 except:
@@ -145,7 +148,6 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
                 seqResults.append(r)
             #end for subseqs
             if config.SAVE_RESULT:
-                pdb.set_trace()
                 scripts.butil.load_results.save_seq_result(seqResults)
 
             trackerResults[t].append(seqResults)

@@ -1,0 +1,70 @@
+# Copyright Utah State University Research Foundation.
+# All rights reserved except as specified below.
+# This information is protected by a Non-Disclosure/Government Purpose
+# License Agreement and is authorized only for United States Federal
+# Government use.
+# This information may be subject to export control.
+
+[MASTER]
+
+# Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
+# number of processors available to use.
+jobs=0
+
+[MESSAGES CONTROL]
+
+# Enable the message, report, category or checker with the given id(s). You can
+# either give multiple identifier separated by comma (,) or put this option
+# multiple time (only on the command line, not in the configuration file where
+# it should appear only once). See also the "--disable" option for examples.
+enable=c-extension-no-member
+
+
+[REPORTS]
+
+# Template used to display messages. This is a python new-style format string
+# used to format the message information. See doc for all details.
+msg-template='{path}:{line}: [{msg_id} {symbol}] {obj} {msg}'
+
+# Set the output format. Available formats are text, parseable, colorized, json
+# and msvs (visual studio). You can also give a reporter class, e.g.
+# mypackage.mymodule.MyReporterClass.
+output-format=colorized
+
+# Activate the evaluation score.
+score=no
+
+
+[BASIC]
+
+const-naming-style=UPPER_CASE
+
+
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+notes=FIXME,
+      XXX,
+      TODO,
+      BUG,
+      HACK
+
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=80
+
+
+[LOGGING]
+
+# Format style used to check logging format string. `old` means using %
+# formatting, while `new` is for `{}` formatting.
+logging-format-style=new
+
+
+[EXCEPTIONS]
+
+# Exceptions that will emit a warning when being caught. Defaults to
+# "Exception".
+overgeneral-exceptions=Exception
