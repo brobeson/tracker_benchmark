@@ -1,10 +1,9 @@
 """Utility functions for drawing overlap and precision graphs."""
 
 import os
-import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.interpolate import make_interp_spline, BSpline
+from scipy.interpolate import make_interp_spline
 import config
 
 
@@ -33,21 +32,30 @@ def draw_overlap(scores):
 
 
 def _draw_overlap_graph(scores):
-    scores = sorted(scores, key=lambda score: sum(score.successRateList), reverse=True)
+    scores = sorted(
+        scores, key=lambda score: sum(score.successRateList), reverse=True
+    )
     figure = plt.figure(figsize=(9, 6))
     axes = figure.add_subplot(1, 1, 1)
     axes.set_title(f"OPE - {scores[0].name}", {"fontsize": "medium"})
     axes.autoscale(enable=True, axis="both", tight=True)
     axes.set_xlabel("Thresholds")
     axes.grid(
-        b=True, which="major", axis="both", color="#101010", alpha=0.5, linestyle=":"
+        b=True,
+        which="major",
+        axis="both",
+        color="#101010",
+        alpha=0.5,
+        linestyle=":",
     )
-    num_lines = max([config.MAXIMUM_LINES, len(scores), len(config.LINE_COLORS)])
+    num_lines = max(
+        [config.MAXIMUM_LINES, len(scores), len(config.LINE_COLORS)]
+    )
     for score, color in zip(
         scores[0 : num_lines - 1], config.LINE_COLORS[0 : num_lines - 1]
     ):
         mean = sum(score.successRateList) / len(score.successRateList)
-        x, y = smooth_data(config.thresholdSetOverlap, score.successRateList)
+        x, y = _smooth_data(config.thresholdSetOverlap, score.successRateList)
         axes.plot(
             x,
             y,
@@ -60,8 +68,9 @@ def _draw_overlap_graph(scores):
     return figure
 
 
-def smooth_data(x, y):
-    # Adapted from https://stackoverflow.com/questions/5283649/plot-smooth-line-with-pyplot
+def _smooth_data(x, y):
+    # Adapted from
+    # https://stackoverflow.com/questions/5283649/plot-smooth-line-with-pyplot
     # I can improve on it later.
     new_x = np.linspace(min(x), max(x), 300)
     spline = make_interp_spline(x, y, 3)

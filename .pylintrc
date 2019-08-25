@@ -18,6 +18,7 @@ jobs=0
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
 enable=c-extension-no-member
+disable=bad-continuation
 
 
 [REPORTS]
@@ -38,6 +39,8 @@ score=no
 [BASIC]
 
 const-naming-style=UPPER_CASE
+variable-rgx=[a-z][a-z0-9_]*
+argument-rgx=[a-z][a-z0-9_]*
 
 
 [MISCELLANEOUS]
