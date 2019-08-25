@@ -1,6 +1,7 @@
 from config import *
 #from scripts import *
 from scripts.model import score
+import scripts.model.result as result
 
 def save_seq_result(result):
     tracker = result[0].tracker
@@ -70,9 +71,9 @@ def load_result(evalType, tracker):
             string = resultFile.read()
             jsonList = json.loads(string)
             if type(jsonList) is list:
-                results.append([Result(**j) for j in jsonList])
+                results.append([result.Result(**j) for j in jsonList])
             elif type(jsonList) is dict:
-                results.append([Result(**jsonList)])
+                results.append([result.Result(**jsonList)])
     print('({0} seqs)'.format(len(resultNames) - 1))
     return results, attrs
 
@@ -85,9 +86,9 @@ def load_seq_result(evalType, tracker, sequence):
     string = resultFile.read()
     jsonList = json.loads(string)
     if type(jsonList) is list:
-        return [Result(**j) for j in jsonList]
+        return [result.Result(**j) for j in jsonList]
     elif type(jsonList) is dict:
-        return [Result(**jsonList)]
+        return [result.Result(**jsonList)]
     return None
 
 def load_all_scores(evalType, testname):

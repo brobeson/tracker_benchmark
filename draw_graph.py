@@ -5,11 +5,11 @@ import math
 import sys
 
 import config
-from scripts.butil import load_results
+from scripts.butil import load_results, graphs
 
 def main():
     evalTypes = ['OPE']
-    testname = 'tb50'
+    testname = 'tb100'
     graph = 'overlap'
     if len(sys.argv) >= 2:
         graph = sys.argv[1]
@@ -30,6 +30,8 @@ def main():
 
 
 def get_overlap_graph(scoreList, fignum, evalType, testname):
+    graphs.draw_overlap(scoreList)
+    sys.exit(0)
     fig = plt.figure(num=fignum, figsize=(9,6), dpi=70)
     rankList = sorted(scoreList, 
         key=lambda o: sum(o[0].successRateList), reverse=True)

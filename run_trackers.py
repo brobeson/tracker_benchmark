@@ -47,7 +47,7 @@ def main(argv):
     if config.SETUP_SEQ:
         print('Setup sequences ...')
         scripts.butil.seq_config.setup_seqs(loadSeqs)
-    testname = "foo"  #input("Input Test name : ")
+    testname = "tb100"  #input("Input Test name : ")
     print(f'Starting benchmark for {len(trackers)} trackers, evalTypes : {evalTypes}')
     #print 'Starting benchmark for {0} trackers, evalTypes : {1}'.format(len(trackers), evalTypes)
     for evalType in evalTypes:
