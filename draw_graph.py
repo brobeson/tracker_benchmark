@@ -18,6 +18,7 @@ def main():
         evalType = evalTypes[i]
         result_src = config.RESULT_SRC.format(evalType)
         trackers = os.listdir(result_src)
+        tracker_colors = graphs.get_color_table(trackers)
         scoreList = []
         for t in trackers:
             score = load_results.load_scores(evalType, t, testname)
@@ -25,12 +26,13 @@ def main():
         if graph == 'precision':
             plt = get_precision_graph(scoreList, i, evalType, testname)
         else:
-            plt = get_overlap_graph(scoreList, i, evalType, testname)
+            plt = get_overlap_graph(scoreList, i, evalType, testname,
+                    tracker_colors)
     plt.show()
 
 
-def get_overlap_graph(scoreList, fignum, evalType, testname):
-    graphs.draw_overlap(scoreList)
+def get_overlap_graph(scoreList, fignum, evalType, testname, tracker_colors):
+    graphs.draw_overlap(scoreList, tracker_colors)
     sys.exit(0)
     fig = plt.figure(num=fignum, figsize=(9,6), dpi=70)
     rankList = sorted(scoreList, 

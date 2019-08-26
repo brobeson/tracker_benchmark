@@ -7,7 +7,25 @@ from scipy.interpolate import make_interp_spline
 import config
 
 
-def draw_overlap(scores):
+def get_color_table(trackers):
+    """Generate a table of colors for graph lines, indexed by tracker name.
+
+    Parameters:
+    trackers: A list of strings. Each string is the name of a tracker.
+    Returns: A dictionary mapping each tracker to a unique color.
+    """
+    line_styles = ["-", "--", "-.", ":"]
+    curve_styles = []
+    for style in line_styles:
+        for color in config.LINE_COLORS:
+            curve_styles.append({"color": color, "style": style})
+    lut = {}
+    for tracker in enumerate(trackers):
+        lut[tracker[1]] = curve_styles[tracker[0]]
+    return lut
+
+
+def draw_overlap(scores, tracker_colors):
     """Draw all the overlap graphs.
 
     Parameters:
@@ -22,7 +40,7 @@ def draw_overlap(scores):
         attribute_scores = []
         for tracker in scores:
             attribute_scores.append(tracker[a])
-        figure = _draw_overlap_graph(attribute_scores)
+        figure = _draw_overlap_graph(attribute_scores, tracker_colors)
         figure.savefig(
             os.path.join("graphs", f"{attribute_scores[0].name}.svg"),
             bbox_inches="tight",
@@ -31,7 +49,7 @@ def draw_overlap(scores):
     plt.show()
 
 
-def _draw_overlap_graph(scores):
+def _draw_overlap_graph(scores, tracker_colors):
     scores = sorted(
         scores, key=lambda score: sum(score.successRateList), reverse=True
     )
@@ -48,21 +66,17 @@ def _draw_overlap_graph(scores):
         alpha=0.5,
         linestyle=":",
     )
-    num_lines = max(
-        [config.MAXIMUM_LINES, len(scores), len(config.LINE_COLORS)]
-    )
-    for score, color in zip(
-        scores[0 : num_lines - 1], config.LINE_COLORS[0 : num_lines - 1]
-    ):
+    num_lines = min([config.MAXIMUM_LINES, len(scores)])
+    for score in scores[0 : num_lines - 1]:
         mean = sum(score.successRateList) / len(score.successRateList)
         x, y = _smooth_data(config.thresholdSetOverlap, score.successRateList)
         axes.plot(
             x,
             y,
-            color=color,
+            color=tracker_colors[score.tracker]["color"],
             label=f"{score.tracker} [{mean:.2f}]",
             linewidth=1.0,
-            linestyle="-",
+            linestyle=tracker_colors[score.tracker]["style"],
         )
     axes.legend()  # This must remain after the axes.plot() calls.
     return figure
