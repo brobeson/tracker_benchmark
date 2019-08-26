@@ -25,7 +25,7 @@ def get_color_table(trackers):
     return lut
 
 
-def draw_overlap(scores, tracker_colors):
+def draw_overlap(scores, tracker_colors, forced_tracker=None):
     """Draw all the overlap graphs.
 
     Parameters:
@@ -40,7 +40,9 @@ def draw_overlap(scores, tracker_colors):
         attribute_scores = []
         for tracker in scores:
             attribute_scores.append(tracker[a])
-        figure = _draw_overlap_graph(attribute_scores, tracker_colors)
+        figure = _draw_overlap_graph(
+            attribute_scores, tracker_colors, forced_tracker
+        )
         figure.savefig(
             os.path.join("graphs", f"{attribute_scores[0].name}.svg"),
             bbox_inches="tight",
@@ -49,9 +51,12 @@ def draw_overlap(scores, tracker_colors):
     plt.show()
 
 
-def _draw_overlap_graph(scores, tracker_colors):
-    scores = sorted(
-        scores, key=lambda score: sum(score.successRateList), reverse=True
+def _draw_overlap_graph(scores, tracker_colors, forced_tracker):
+    scores = _bubble_up(
+        sorted(
+            scores, key=lambda score: sum(score.successRateList), reverse=True
+        ),
+        forced_tracker,
     )
     figure = plt.figure(figsize=(9, 6))
     axes = figure.add_subplot(1, 1, 1)
@@ -66,8 +71,23 @@ def _draw_overlap_graph(scores, tracker_colors):
         alpha=0.5,
         linestyle=":",
     )
-    num_lines = min([config.MAXIMUM_LINES, len(scores)])
-    for score in scores[0 : num_lines - 1]:
+    a = 0
+    b = min([config.MAXIMUM_LINES, len(scores)])
+    if forced_tracker is not None:
+        a = 1
+        mean = sum(scores[0].successRateList) / len(scores[0].successRateList)
+        x, y = _smooth_data(
+            config.thresholdSetOverlap, scores[0].successRateList
+        )
+        axes.plot(
+            x,
+            y,
+            color=tracker_colors[scores[0].tracker]["color"],
+            label=f"{scores[0].tracker} [{mean:.2f}]",
+            linewidth=1.0,
+            linestyle=tracker_colors[scores[0].tracker]["style"],
+        )
+    for score in scores[a:b]:
         mean = sum(score.successRateList) / len(score.successRateList)
         x, y = _smooth_data(config.thresholdSetOverlap, score.successRateList)
         axes.plot(
@@ -77,6 +97,7 @@ def _draw_overlap_graph(scores, tracker_colors):
             label=f"{score.tracker} [{mean:.2f}]",
             linewidth=1.0,
             linestyle=tracker_colors[score.tracker]["style"],
+            alpha=0.25,
         )
     axes.legend()  # This must remain after the axes.plot() calls.
     return figure
@@ -89,3 +110,15 @@ def _smooth_data(x, y):
     new_x = np.linspace(min(x), max(x), 300)
     spline = make_interp_spline(x, y, 3)
     return new_x, spline(new_x)
+
+
+def _bubble_up(scores, tracker):
+    if tracker is not None:
+        for score in enumerate(scores):
+            if score[1].tracker == tracker:
+                index = score[0]
+        if index != 0:
+            to_move = scores[index]
+            del scores[index]
+            scores.insert(0, to_move)
+    return scores

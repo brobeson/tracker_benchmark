@@ -32,7 +32,7 @@ def main():
 
 
 def get_overlap_graph(scoreList, fignum, evalType, testname, tracker_colors):
-    graphs.draw_overlap(scoreList, tracker_colors)
+    graphs.draw_overlap(scoreList, tracker_colors, "dmdnet")
     sys.exit(0)
     fig = plt.figure(num=fignum, figsize=(9,6), dpi=70)
     rankList = sorted(scoreList, 
