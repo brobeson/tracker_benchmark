@@ -56,3 +56,15 @@ coded the string to invoke *run_dmdnet.py*.
 The function `scripts.butil.eval_results.calc_result()` was missing the
 `precisionList` array variable. This resulted in a run time exception. I just
 had initialization of an empty array.
+
+## Graphing Improvements
+The *draw_graph.py* script was very problematic.
+1. The script only drew the graph for all sequences. The attribute-based graphs
+   were not drawn. I added code to draw all 12 graphs.
+1. Only the top N trackers were drawn (N can be configured by the user). If an
+   experimental tracker was outside of N, it was not drawn. I added code to
+always draw a particular tracker. This allows comparing the experimental tracker
+for all attributes.
+1. I faded the non-experimental trackers into the background some (reduced
+   opacity). This makes the experimental tracker stand out, but maintains
+context to evaluate performance.
