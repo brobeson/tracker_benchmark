@@ -68,3 +68,5 @@ for all attributes.
 1. I faded the non-experimental trackers into the background some (reduced
    opacity). This makes the experimental tracker stand out, but maintains
 context to evaluate performance.
+1. I added interpolation code to draw smooth graphs. The original graphs were
+   very angular.

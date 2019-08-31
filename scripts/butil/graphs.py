@@ -87,16 +87,18 @@ def _draw_overlap_graph(scores, tracker_colors, forced_tracker):
             linewidth=1.0,
             linestyle=tracker_colors[scores[0].tracker]["style"],
         )
-    for score in scores[a:b]:
-        mean = sum(score.successRateList) / len(score.successRateList)
-        x, y = _smooth_data(config.thresholdSetOverlap, score.successRateList)
+    for score in enumerate(scores[a:b]):
+        mean = sum(score[1].successRateList) / len(score[1].successRateList)
+        x, y = _smooth_data(
+            config.thresholdSetOverlap, score[1].successRateList
+        )
         axes.plot(
             x,
             y,
-            color=tracker_colors[score.tracker]["color"],
-            label=f"{score.tracker} [{mean:.2f}]",
+            color=tracker_colors[score[1].tracker]["color"],
+            label=f"{score[0]} - {score[1].tracker} [{mean:.2f}]",
             linewidth=1.0,
-            linestyle=tracker_colors[score.tracker]["style"],
+            linestyle=tracker_colors[score[1].tracker]["style"],
             alpha=0.25,
         )
     axes.legend()  # This must remain after the axes.plot() calls.
