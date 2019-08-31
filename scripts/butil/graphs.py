@@ -85,6 +85,19 @@ def _draw_overlap_graph(scores, tracker_colors, forced_tracker):
                 "opacity": 1.0 if score[1].tracker == forced_tracker else 0.25
             },
         )
+    i = _tracker_index(scores, forced_tracker)
+    if i is not None and (i < a or b <= i):
+        _graph_data(
+            axes,
+            scores[i].successRateList,
+            {
+                "color": tracker_colors[scores[i].tracker]["color"],
+                "name": scores[i].tracker,
+                "rank": i + 1,
+                "line style": tracker_colors[scores[i].tracker]["style"],
+                "opacity": 1.0,
+            },
+        )
     axes.legend()  # This must remain after the axes.plot() calls.
     return figure
 
@@ -126,3 +139,10 @@ def _graph_data(axes, data, style):
         linestyle=style["line style"],
         alpha=style["opacity"],
     )
+
+
+def _tracker_index(scores, tracker):
+    for i, score in enumerate(scores):
+        if score.tracker == tracker:
+            return i
+    return None
