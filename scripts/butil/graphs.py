@@ -70,47 +70,20 @@ def _draw_overlap_graph(scores, tracker_colors, forced_tracker):
         scores, key=lambda score: sum(score.successRateList), reverse=True
     )
     figure = plt.figure(figsize=(9, 6))
-    axes = figure.add_subplot(1, 1, 1)
-    axes.set_title(f"OPE - {scores[0].name}", {"fontsize": "medium"})
-    axes.autoscale(enable=True, axis="both", tight=True)
-    axes.set_xlabel("Thresholds")
-    axes.grid(
-        b=True,
-        which="major",
-        axis="both",
-        color="#101010",
-        alpha=0.5,
-        linestyle=":",
-    )
+    axes = _make_axes(figure, scores[0].name)
     a = 0
     b = min([config.MAXIMUM_LINES, len(scores)])
-    #if forced_tracker is not None:
-    #    a = 1
-    #    mean = sum(scores[0].successRateList) / len(scores[0].successRateList)
-    #    x, y = _smooth_data(
-    #        config.thresholdSetOverlap, scores[0].successRateList
-    #    )
-    #    axes.plot(
-    #        x,
-    #        y,
-    #        color=tracker_colors[scores[0].tracker]["color"],
-    #        label=f"{scores[0].tracker} [{mean:.2f}]",
-    #        linewidth=1.0,
-    #        linestyle=tracker_colors[scores[0].tracker]["style"],
-    #    )
     for score in enumerate(scores[a:b]):
-        mean = sum(score[1].successRateList) / len(score[1].successRateList)
-        x, y = _smooth_data(
-            config.thresholdSetOverlap, score[1].successRateList
-        )
-        axes.plot(
-            x,
-            y,
-            color=tracker_colors[score[1].tracker]["color"],
-            label=f"{score[0] + 1} - {score[1].tracker} [{mean:.2f}]",
-            linewidth=1.0,
-            linestyle=tracker_colors[score[1].tracker]["style"],
-            alpha=0.25,
+        _graph_data(
+            axes,
+            score[1].successRateList,
+            {
+                "color": tracker_colors[score[1].tracker]["color"],
+                "name": score[1].tracker,
+                "rank": score[0] + 1,
+                "line style": tracker_colors[score[1].tracker]["style"],
+                "opacity": 1.0 if score[1].tracker == forced_tracker else 0.25
+            },
         )
     axes.legend()  # This must remain after the axes.plot() calls.
     return figure
@@ -123,3 +96,33 @@ def _smooth_data(x, y):
     new_x = np.linspace(min(x), max(x), 300)
     spline = make_interp_spline(x, y, 3)
     return new_x, spline(new_x)
+
+
+def _make_axes(figure, title):
+    axes = figure.add_subplot(1, 1, 1)
+    axes.set_title(f"OPE - {title}", {"fontsize": "medium"})
+    axes.autoscale(enable=True, axis="both", tight=True)
+    axes.set_xlabel("Thresholds")
+    axes.grid(
+        b=True,
+        which="major",
+        axis="both",
+        color="#101010",
+        alpha=0.5,
+        linestyle=":",
+    )
+    return axes
+
+
+def _graph_data(axes, data, style):
+    mean = sum(data) / len(data)
+    x, y = _smooth_data(config.thresholdSetOverlap, data)
+    axes.plot(
+        x,
+        y,
+        color=style["color"],
+        label=f"{style['rank']} - {style['name']} [{mean:.2f}]",
+        linewidth=1.0,
+        linestyle=style["line style"],
+        alpha=style["opacity"],
+    )
