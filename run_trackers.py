@@ -9,6 +9,7 @@ import scripts.butil.seq_config
 import scripts.butil.load_results
 import scripts.butil.eval_results
 import scripts.bscripts.run_dmdnet
+import scripts.bscripts.run_MDNet
 from scripts.model.result import Result
 
 
@@ -123,7 +124,7 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
                 if os.path.exists(os.path.join(config.TRACKER_SRC, t)):
                     move_dir = True
                     os.chdir(os.path.join(config.TRACKER_SRC, t))
-                funcName = "scripts.bscripts.run_dmdnet.run_{0}(subS, rp, config.SAVE_IMAGE)".format(t)
+                funcName = f"scripts.bscripts.run_{t}.run_{t}(subS, rp, config.SAVE_IMAGE)"
                 try:
                     res = eval(funcName)
                 except:
