@@ -82,7 +82,7 @@ def _draw_overlap_graph(scores, tracker_colors, forced_tracker):
                 "name": score[1].tracker,
                 "rank": score[0] + 1,
                 "line style": tracker_colors[score[1].tracker]["style"],
-                "opacity": 1.0 if score[1].tracker == forced_tracker else 0.25
+                "opacity": 1.0 if score[1].tracker == forced_tracker else 0.5
             },
         )
     i = _tracker_index(scores, forced_tracker)
