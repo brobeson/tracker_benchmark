@@ -9,6 +9,7 @@ import scripts.butil.seq_config
 import scripts.butil.load_results
 import scripts.butil.eval_results
 import scripts.bscripts.run_dmdnet
+import scripts.bscripts.run_igt
 import scripts.bscripts.run_MDNet
 from scripts.model.result import Result
 
