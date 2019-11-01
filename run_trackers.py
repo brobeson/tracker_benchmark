@@ -1,6 +1,7 @@
 import getopt
 import sys
 import os
+import time
 
 import numpy as np
 from PIL import Image
@@ -9,6 +10,8 @@ import scripts.butil.seq_config
 import scripts.butil.load_results
 import scripts.butil.eval_results
 import scripts.bscripts.run_dmdnet
+import scripts.bscripts.run_alphaLoss
+import scripts.bscripts.run_focusLoss
 import scripts.bscripts.run_igt
 import scripts.bscripts.run_MDNet
 from scripts.model.result import Result
@@ -49,7 +52,7 @@ def main(argv):
     if config.SETUP_SEQ:
         print('Setup sequences ...')
         scripts.butil.seq_config.setup_seqs(loadSeqs)
-    testname = "tb100"  #input("Input Test name : ")
+    testname = input("Input test name: ")
     print(f'Starting benchmark for {len(trackers)} trackers, evalTypes : {evalTypes}')
     #print 'Starting benchmark for {0} trackers, evalTypes : {1}'.format(len(trackers), evalTypes)
     for evalType in evalTypes:
@@ -153,6 +156,8 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
                 scripts.butil.load_results.save_seq_result(seqResults)
 
             trackerResults[t].append(seqResults)
+            print("Sleeping for 2 minute to cool down...")
+            time.sleep(120)
         #end for tracker
     #end for allseqs
     return trackerResults
