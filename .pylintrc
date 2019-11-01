@@ -53,12 +53,6 @@ notes=FIXME,
       HACK
 
 
-[FORMAT]
-
-# Maximum number of characters on a single line.
-max-line-length=80
-
-
 [LOGGING]
 
 # Format style used to check logging format string. `old` means using %
