@@ -9,10 +9,6 @@ import config
 import scripts.butil.seq_config
 import scripts.butil.load_results
 import scripts.butil.eval_results
-import scripts.bscripts.run_dmdnet
-import scripts.bscripts.run_alphaLoss
-import scripts.bscripts.run_focusLoss
-import scripts.bscripts.run_igt
 import scripts.bscripts.run_MDNet
 from scripts.model.result import Result
 
@@ -104,6 +100,7 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
 
         for idxTrk in range(len(trackers)):         
             t = trackers[idxTrk]
+            seqResults = []
             if not config.OVERWRITE_RESULT:
                 trk_src = os.path.join(config.RESULT_SRC.format(evalType), t)
                 result_src = os.path.join(trk_src, s.name+'.json')
@@ -111,7 +108,6 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
                     seqResults = scripts.butil.load_results.load_seq_result(evalType, t, s.name)
                     trackerResults[t].append(seqResults)
                     continue
-            seqResults = []
             seqLen = len(subSeqs)
             for idx in range(seqLen):
                 print(f'{idxTrk + 1}_{t}, {idxSeq + 1}_{s.name}:{idx + 1}/{seqLen} - {evalType}')
@@ -156,8 +152,6 @@ def run_trackers(trackers, seqs, evalType, shiftTypeSet):
                 scripts.butil.load_results.save_seq_result(seqResults)
 
             trackerResults[t].append(seqResults)
-            print("Sleeping for 2 minute to cool down...")
-            time.sleep(120)
         #end for tracker
     #end for allseqs
     return trackerResults
