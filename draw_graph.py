@@ -1,22 +1,21 @@
-import matplotlib.pyplot as plt
-import os
-import numpy as np
-import math
-import sys
+"""Draw results graphs."""
 
+import os
+import sys
+import matplotlib.pyplot as plt
 import config
 from scripts.butil import load_results, graphs
 
 
 def main():
+    """The main entry point for the script."""
     evalTypes = ["OPE"]
     testname = "tb100"
     graph = "overlap"
     if len(sys.argv) >= 2:
         graph = sys.argv[1]
 
-    for i in range(len(evalTypes)):
-        evalType = evalTypes[i]
+    for i, evalType in enumerate(evalTypes):
         result_src = config.RESULT_SRC.format(evalType)
         trackers = os.listdir(result_src)
         tracker_colors = graphs.get_color_table(trackers)
@@ -25,18 +24,19 @@ def main():
             score = load_results.load_scores(evalType, t, testname)
             scoreList.append(score)
         if graph == "precision":
-            plt = get_precision_graph(scoreList, i, evalType, testname)
+            graph = get_precision_graph(scoreList, i, evalType, testname)
         else:
-            plt = get_overlap_graph(scoreList, i, evalType, testname, tracker_colors)
-    plt.show()
+            graph = get_overlap_graph(scoreList, i, evalType, testname, tracker_colors)
+    graph.show()
 
 
-def get_overlap_graph(scoreList, fignum, evalType, testname, tracker_colors):
+def get_overlap_graph(scoreList, figure_number, evalType, testname, tracker_colors):
+    """Generate the overlap success graph."""
     graphs.draw_overlap(scoreList, tracker_colors, "dmdnet")
     sys.exit(0)
-    fig = plt.figure(num=fignum, figsize=(9, 6), dpi=70)
+    plt.figure(num=figure_number, figsize=(9, 6), dpi=70)
     rankList = sorted(scoreList, key=lambda o: sum(o[0].successRateList), reverse=True)
-    for i in range(len(rankList)):
+    for i, result in enumerate(rankList):
         result = rankList[i]
         tracker = result[0].tracker
         attr = result[0]
@@ -71,10 +71,11 @@ def get_overlap_graph(scoreList, fignum, evalType, testname, tracker_colors):
     return plt
 
 
-def get_precision_graph(scoreList, fignum, evalType, testname):
-    fig = plt.figure(num=fignum, figsize=(9, 6), dpi=70)
+def get_precision_graph(scoreList, figure_number, evalType, testname):
+    """Generate a center precision error graph."""
+    plt.figure(num=figure_number, figsize=(9, 6), dpi=70)
     rankList = sorted(scoreList, key=lambda o: o[0].precisionList[20], reverse=True)
-    for i in range(len(rankList)):
+    for i, result in enumerate(rankList):
         result = rankList[i]
         tracker = result[0].tracker
         attr = result[0]
