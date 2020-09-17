@@ -1,5 +1,6 @@
 """Draw results graphs."""
 
+import argparse
 import os
 import sys
 import matplotlib.pyplot as plt
@@ -9,32 +10,62 @@ from scripts.butil import load_results, graphs
 
 def main():
     """The main entry point for the script."""
-    evalTypes = ["OPE"]
-    testname = "tb100"
-    graph = "overlap"
-    if len(sys.argv) >= 2:
-        graph = sys.argv[1]
-
-    for i, evalType in enumerate(evalTypes):
-        result_src = config.RESULT_SRC.format(evalType)
-        trackers = os.listdir(result_src)
-        tracker_colors = graphs.get_color_table(trackers)
-        scoreList = []
-        for t in trackers:
-            score = load_results.load_scores(evalType, t, testname)
-            scoreList.append(score)
-        if graph == "precision":
-            graph = get_precision_graph(scoreList, i, evalType, testname)
-        else:
-            graph = get_overlap_graph(scoreList, i, evalType, testname, tracker_colors)
+    arguments = _parse_command_line()
+    result_src = config.RESULT_SRC.format(arguments.evaluation_type)
+    trackers = os.listdir(result_src)
+    tracker_colors = graphs.get_color_table(trackers)
+    scoreList = []
+    for t in trackers:
+        score = load_results.load_scores(
+            arguments.evaluation_type, t, arguments.test_name
+        )
+        scoreList.append(score)
+    if arguments.graph_type == "precision":
+        graph = get_precision_graph(
+            scoreList, arguments.evaluation_type, arguments.test_name
+        )
+    else:
+        graph = get_overlap_graph(
+            scoreList, arguments.evaluation_type, arguments.test_name, tracker_colors
+        )
     graph.show()
 
 
-def get_overlap_graph(scoreList, figure_number, evalType, testname, tracker_colors):
+def _parse_command_line() -> argparse.Namespace:
+    """
+    Parse the command line arguments.
+
+    :return: The parsed command line arguments.
+    :rtype: argparse.Namespace
+    """
+    parser = argparse.ArgumentParser(
+        description="Draw overlap success or center error precision graphs.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--evaluation-type",
+        help="The type of evaluation to graph.",
+        choices=["OPE", "SRE", "TRE"],
+        default="OPE",
+    )
+    parser.add_argument(
+        "test_name",
+        help="The name of the test to graph. This should match a name that you used when you ran "
+        "the run_trackers.py script.",
+    )
+    parser.add_argument(
+        "graph_type",
+        choices=["overlap", "precision"],
+        help="The type of graphs to draw: overlap success or center error precision.",
+    )
+    return parser.parse_args()
+
+
+def get_overlap_graph(scoreList, evalType, testname, tracker_colors):
     """Generate the overlap success graph."""
     graphs.draw_overlap(scoreList, tracker_colors, "dmdnet")
     sys.exit(0)
-    plt.figure(num=figure_number, figsize=(9, 6), dpi=70)
+    plt.figure(figsize=(9, 6), dpi=70)
     rankList = sorted(scoreList, key=lambda o: sum(o[0].successRateList), reverse=True)
     for i, result in enumerate(rankList):
         result = rankList[i]
@@ -71,9 +102,9 @@ def get_overlap_graph(scoreList, figure_number, evalType, testname, tracker_colo
     return plt
 
 
-def get_precision_graph(scoreList, figure_number, evalType, testname):
+def get_precision_graph(scoreList, evalType, testname):
     """Generate a center precision error graph."""
-    plt.figure(num=figure_number, figsize=(9, 6), dpi=70)
+    plt.figure(figsize=(9, 6), dpi=70)
     rankList = sorted(scoreList, key=lambda o: o[0].precisionList[20], reverse=True)
     for i, result in enumerate(rankList):
         result = rankList[i]
