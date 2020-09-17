@@ -11,22 +11,16 @@ from scripts.butil import load_results, graphs
 def main():
     """The main entry point for the script."""
     arguments = _parse_command_line()
-    result_src = config.RESULT_SRC.format(arguments.evaluation_type)
-    trackers = os.listdir(result_src)
+    trackers = _load_trackers(config.RESULT_SRC.format(arguments.evaluation_type))
     tracker_colors = graphs.get_color_table(trackers)
-    scoreList = []
-    for t in trackers:
-        score = load_results.load_scores(
-            arguments.evaluation_type, t, arguments.test_name
-        )
-        scoreList.append(score)
+    score_list = _load_scores(trackers, arguments.evaluation_type, arguments.test_name)
     if arguments.graph_type == "precision":
         graph = get_precision_graph(
-            scoreList, arguments.evaluation_type, arguments.test_name
+            score_list, arguments.evaluation_type, arguments.test_name
         )
     else:
         graph = get_overlap_graph(
-            scoreList, arguments.evaluation_type, arguments.test_name, tracker_colors
+            score_list, arguments.evaluation_type, arguments.test_name, tracker_colors
         )
     graph.show()
 
@@ -61,12 +55,32 @@ def _parse_command_line() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def get_overlap_graph(scoreList, evalType, testname, tracker_colors):
+def _load_trackers(results_directory: str):
+    """
+    Load the list of the trackers available to graph.
+
+    :param str results_directory: The directory that contains the tracking results. This directory
+        is read to get the available trackers.
+    :return: The list of available trackers.
+    :rtype: list
+    """
+    trackers = os.listdir(results_directory)
+    return sorted(trackers)
+
+
+def _load_scores(trackers, evaluation_type, test_name):
+    score_list = []
+    for tracker in trackers:
+        score_list.append(load_results.load_scores(evaluation_type, tracker, test_name))
+    return score_list
+
+
+def get_overlap_graph(score_list, evalType, testname, tracker_colors):
     """Generate the overlap success graph."""
-    graphs.draw_overlap(scoreList, tracker_colors, "dmdnet")
+    graphs.draw_overlap(score_list, tracker_colors, "dmdnet")
     sys.exit(0)
     plt.figure(figsize=(9, 6), dpi=70)
-    rankList = sorted(scoreList, key=lambda o: sum(o[0].successRateList), reverse=True)
+    rankList = sorted(score_list, key=lambda o: sum(o[0].successRateList), reverse=True)
     for i, result in enumerate(rankList):
         result = rankList[i]
         tracker = result[0].tracker
@@ -102,10 +116,10 @@ def get_overlap_graph(scoreList, evalType, testname, tracker_colors):
     return plt
 
 
-def get_precision_graph(scoreList, evalType, testname):
+def get_precision_graph(score_list, evalType, testname):
     """Generate a center precision error graph."""
     plt.figure(figsize=(9, 6), dpi=70)
-    rankList = sorted(scoreList, key=lambda o: o[0].precisionList[20], reverse=True)
+    rankList = sorted(score_list, key=lambda o: o[0].precisionList[20], reverse=True)
     for i, result in enumerate(rankList):
         result = rankList[i]
         tracker = result[0].tracker
