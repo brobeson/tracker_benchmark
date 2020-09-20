@@ -5,6 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Draw Graph",
+      "type": "python",
+      "request": "launch",
+      "module": "draw_graph",
+    },
+    {
       "name": "Write Table",
       "type": "python",
       "request": "launch",
@@ -13,9 +19,9 @@
         "tb100",
         "overlap",
         "MDNet_original",
+        "MDNet_pada",
         "MDNet_cosine_annealing",
         "MDNet_inverse_cosine_annealing",
-        "MDNet_pada",
       ]
     }
   ]

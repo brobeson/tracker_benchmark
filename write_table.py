@@ -2,6 +2,8 @@
 
 import argparse
 import os
+import statistics
+
 import config
 import scripts.butil.load_results
 import scripts.butil.tables
@@ -112,7 +114,11 @@ def _extract_table(scores, table: scripts.butil.tables.Table):
     """
     for tracker in scores:
         for category in tracker:
-            table.set_value(category.name, category.tracker, round(category.overlap, 2))
+            table.set_value(
+                category.name,
+                category.tracker,
+                round(statistics.fmean(category.successRateList), 2),
+            )
 
 
 if __name__ == "__main__":

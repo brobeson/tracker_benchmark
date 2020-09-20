@@ -5,6 +5,7 @@
         "bbox",
         "butil",
         "cvpr",
+        "fmean",
         "matplotlib",
         "nargs"
     ]
