@@ -12,8 +12,6 @@ import scripts.butil.tables
 def main():
     """The main entry point for the script."""
     arguments = _parse_command_line()
-    if arguments.metric == "precision":
-        raise NotImplementedError("precision is not implemented yet.")
     if arguments.highlight_best:
         raise NotImplementedError("--highlight-best is not implemented yet.")
     if arguments.show_delta:
@@ -23,7 +21,7 @@ def main():
     )
     table = scripts.butil.tables.make_table(arguments.table_type, trackers)
     score_list = _load_scores(trackers, arguments.evaluation_type, arguments.test_name)
-    _extract_table(score_list, table)
+    _extract_table(score_list, arguments.metric, table)
     print()
     table.print()
 
@@ -94,7 +92,7 @@ def _load_trackers(results_directory: str, requested_trackers):
             trackers.append(tracker)
         else:
             print("warning:", tracker, "is not available in", results_directory)
-    return sorted(trackers)
+    return trackers
 
 
 def _load_scores(trackers, evaluation_type, test_name):
@@ -106,19 +104,31 @@ def _load_scores(trackers, evaluation_type, test_name):
     return score_list
 
 
-def _extract_table(scores, table: scripts.butil.tables.Table):
+def _extract_table(scores, metric: str, table: scripts.butil.tables.Table):
     """
     Extract the table data from the scores.
 
     :param list scores: The list of scores.
+    :param str metric: The metric to report: overlap success or center error precision.
+    :param scripts.butil.tables.Table table: The table to fill with score data.
     """
-    for tracker in scores:
-        for category in tracker:
-            table.set_value(
-                category.name,
-                category.tracker,
-                round(statistics.fmean(category.successRateList), 2),
-            )
+    if metric == "overlap":
+        for tracker in scores:
+            for category in tracker:
+                table.set_value(
+                    category.name,
+                    category.tracker,
+                    round(statistics.fmean(category.successRateList), 2),
+                )
+    else:
+        for tracker in scores:
+            for category in tracker:
+                table.set_value(
+                    category.name,
+                    category.tracker,
+                    # TODO I copied this from draw_graph.py. Why is the median value used?
+                    round(category.precisionList[20], 2)
+                )
 
 
 if __name__ == "__main__":
