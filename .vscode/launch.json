@@ -1,0 +1,22 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Write Table",
+      "type": "python",
+      "request": "launch",
+      "module": "write_table",
+      "args": [
+        "tb100",
+        "overlap",
+        "MDNet_original",
+        "MDNet_cosine_annealing",
+        "MDNet_inverse_cosine_annealing",
+        "MDNet_pada",
+      ]
+    }
+  ]
+}

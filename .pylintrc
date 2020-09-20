@@ -39,8 +39,6 @@ score=no
 [BASIC]
 
 const-naming-style=UPPER_CASE
-variable-rgx=[a-z][a-z0-9_]*
-argument-rgx=[a-z][a-z0-9_]*
 
 
 [MISCELLANEOUS]

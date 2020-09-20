@@ -3,7 +3,9 @@
     "cSpell.words": [
         "DYLD",
         "bbox",
+        "butil",
         "cvpr",
-        "matplotlib"
+        "matplotlib",
+        "nargs"
     ]
 }
