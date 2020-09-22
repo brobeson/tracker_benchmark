@@ -36,8 +36,10 @@ TABLE_TYPES = []
 class Table:
     """The base class for different types of tables."""
 
-    def __init__(self, column_headers):
+    def __init__(self, column_headers, highlight_best: bool):
         self._column_headers = column_headers
+        self._highlight_best = highlight_best
+        self._best_scores = None
         self._table_rows = {
             ROW_NAMES[0]: [0.0 for c in self._column_headers],
             ROW_NAMES[1]: [0.0 for c in self._column_headers],
@@ -54,6 +56,11 @@ class Table:
         }
 
     def print(self) -> None:
+        """Prepare the table and print it to standard output."""
+        self.__calculate_best_scores()
+        self._print_the_table()
+
+    def _print_the_table(self) -> None:
         """
         Print the table to standard output.
 
@@ -96,30 +103,36 @@ class Table:
             raise ValueError(f"{column} is not a valid column.")
         self._table_rows[row_name][self._column_headers.index(column)] = value
 
+    def __calculate_best_scores(self):
+        if self._highlight_best:
+            self._best_scores = [
+                max(row_data) for row_data in self._table_rows.values()
+            ]
+
 
 class LatexTable(Table):
     """Support for printing a table using LaTeX."""
 
     TABLE_TYPES.append("latex")
 
-    def print(self) -> None:
+    def _print_the_table(self) -> None:
         """Print the LaTeX table."""
         print("\\begin{table}")
-        print("  \\caption{Foo}")
-        print("  \\begin{tabular}{l", "c " * len(self._column_headers), "}")
+        print("  \\caption{}\\label{}")
+        print("  \\begin{tabular}{l", " c" * len(self._column_headers), "}", sep="")
         print("    \\toprule")
         print("    Category &", " & ".join(self._column_headers), "\\\\")
         print("    \\midrule")
-        for category in ROW_NAMES:
-            print(
-                "   ",
-                FULL_NAMES[category],
-                "&",
-                " & ".join([str(f) for f in self._table_rows[category]]),
-                "\\\\",
-            )
+        for row, row_name in enumerate(ROW_NAMES):
+            print(f"    {FULL_NAMES[row_name]} ", end="")
+            for value in self._table_rows[row_name]:
+                if self._highlight_best and value >= self._best_scores[row]:
+                    print(f" & \\best{{{value:.2f}}}", end="")
+                else:
+                    print(f" & {value:.2f}", end="")
+            print(" \\\\")
         print("    \\bottomrule")
-        print("  \\end{tabular}{l c c c}")
+        print("  \\end{tabular}")
         print("\\end{table}")
 
 
@@ -128,25 +141,26 @@ class ConsoleTable(Table):
 
     TABLE_TYPES.append("basic")
 
-    def print(self) -> None:
+    def _print_the_table(self) -> None:
         """Print the table."""
         category_width, column_widths = self.__calculate_column_widths()
         header_line = self._build_header_line(category_width, column_widths)
         print(header_line)
         print("-" * len(header_line))
-        for category in ROW_NAMES:
-            print(
-                FULL_NAMES[category].ljust(category_width),
-                "".join(
-                    [
-                        str(value).rjust(width)
-                        for value, width in zip(
-                            self._table_rows[category], column_widths
-                        )
-                    ]
-                ),
-                sep="",
-            )
+        for row, row_name in enumerate(ROW_NAMES):
+            print(FULL_NAMES[row_name].ljust(category_width), end="")
+            for value, width in zip(self._table_rows[row_name], column_widths):
+                if self._highlight_best and value >= self._best_scores[row]:
+                    print(
+                        "\033[95m",
+                        f"{value:.2f}".rjust(width),
+                        "\033[0m",
+                        end="",
+                        sep="",
+                    )
+                else:
+                    print(f"{value:.2f}".rjust(width), end="")
+            print()
 
     def __calculate_column_widths(self):
         widths = [len(header) + 1 for header in self._column_headers]
@@ -162,17 +176,18 @@ class ConsoleTable(Table):
         )
 
 
-def make_table(table_type: str, column_headers) -> Table:
+def make_table(table_type: str, column_headers, highlight_best: bool) -> Table:
     """
     Make the type of table requested.
 
     :param str table_type: The type of table to create.
     :param list column_headers: The list of trackers to use as the column headers.
+    :param bool highlight_best: True indicates to highlight the best scores in each row.
     :return: A table object.
     :rtype: A subclass of scripts.butil.tables.Table
     """
     if table_type == "basic":
-        return ConsoleTable(column_headers)
+        return ConsoleTable(column_headers, highlight_best)
     if table_type == "latex":
-        return LatexTable(column_headers)
+        return LatexTable(column_headers, highlight_best)
     raise ValueError(f"{table_type} is not a valid type of table to print.")

@@ -16,6 +16,7 @@
       "request": "launch",
       "module": "write_table",
       "args": [
+        "--highlight-best",
         "tb100",
         "overlap",
         "MDNet_original",

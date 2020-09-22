@@ -12,14 +12,14 @@ import scripts.butil.tables
 def main():
     """The main entry point for the script."""
     arguments = _parse_command_line()
-    if arguments.highlight_best:
-        raise NotImplementedError("--highlight-best is not implemented yet.")
     if arguments.show_delta:
         raise NotImplementedError("--show-delta is not implemented yet.")
     trackers = _load_trackers(
         config.RESULT_SRC.format(arguments.evaluation_type), arguments.tracker
     )
-    table = scripts.butil.tables.make_table(arguments.table_type, trackers)
+    table = scripts.butil.tables.make_table(
+        arguments.table_type, trackers, arguments.highlight_best
+    )
     score_list = _load_scores(trackers, arguments.evaluation_type, arguments.test_name)
     _extract_table(score_list, arguments.metric, table)
     print()
@@ -127,7 +127,7 @@ def _extract_table(scores, metric: str, table: scripts.butil.tables.Table):
                     category.name,
                     category.tracker,
                     # TODO I copied this from draw_graph.py. Why is the median value used?
-                    round(category.precisionList[20], 2)
+                    round(category.precisionList[20], 2),
                 )
 
 
