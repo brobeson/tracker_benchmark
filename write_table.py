@@ -12,13 +12,11 @@ import scripts.butil.tables
 def main():
     """The main entry point for the script."""
     arguments = _parse_command_line()
-    if arguments.show_delta:
-        raise NotImplementedError("--show-delta is not implemented yet.")
     trackers = _load_trackers(
         config.RESULT_SRC.format(arguments.evaluation_type), arguments.tracker
     )
     table = scripts.butil.tables.make_table(
-        arguments.table_type, trackers, arguments.highlight_best
+        arguments.table_type, trackers, arguments.highlight_best, arguments.show_delta
     )
     score_list = _load_scores(trackers, arguments.evaluation_type, arguments.test_name)
     _extract_table(score_list, arguments.metric, table)
@@ -71,7 +69,9 @@ def _parse_command_line() -> argparse.Namespace:
         help="The type of graphs to draw: overlap success or center error precision.",
     )
     parser.add_argument(
-        "tracker", help="The list of trackers to include in the table.", nargs="+",
+        "tracker",
+        help="The list of trackers to include in the table.",
+        nargs="+",
     )
     return parser.parse_args()
 
