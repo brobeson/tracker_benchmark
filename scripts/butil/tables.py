@@ -114,10 +114,11 @@ class Table:
         ]
 
     def __calculate_delta_column(self):
-        delta_index = self._column_headers.index(self._delta_column)
-        self._deltas = []
-        for i, row in enumerate(ROW_NAMES):
-            self._deltas.append(self._best_scores[i] - self._table_rows[row][delta_index])
+        if self._delta_column is not None:
+            delta_index = self._column_headers.index(self._delta_column)
+            self._deltas = []
+            for i, row in enumerate(ROW_NAMES):
+                self._deltas.append(self._best_scores[i] - self._table_rows[row][delta_index])
 
 
 class LatexTable(Table):
