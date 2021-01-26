@@ -33,7 +33,7 @@ def calc_result(tracker, seqs, results, evalType):
                     anno = seq.gtRect[result.startFrame-1:
                         result.endFrame]
 
-            print '{0} : eval {1}'.format(tracker, seq.name)
+            print('{0} : eval {1}'.format(tracker, seq.name))
             aveCoverage, aveErrCenter, errCoverage, errCenter = \
                 scripts.butil.calc_seq_err_robust(result, anno)
             seq.aveCoverage.append(aveCoverage)
@@ -81,7 +81,7 @@ def calc_result(tracker, seqs, results, evalType):
                     seqSuccess = [err for err in seq.errCenter \
                         if err <= threshold]
                     seqSuccessList.append(len(seqSuccess)/float(length))
-                precisionList.append(seqSuccessList)
+                attr.precisionList.append(seqSuccessList)
 
                 THRESHOLD = 0.5
                 errorNum = len([score for score in seq.errCoverage \
@@ -99,9 +99,9 @@ def calc_result(tracker, seqs, results, evalType):
             for i in range(len(thresholdSetOverlap)):
                 attr.successRateList.append(
                     sum([rates[i] for rates in successRateList]) / float(len(successRateList)))
-        if len(precisionList) > 0:
+        if len(attr.precisionList) > 0:
             for i in range(len(thresholdSetError)):
-                pre = [p[i] for p in precisionList]
+                pre = [p[i] for p in attr.precisionList]
                 precision = sum(pre) / float(len(pre))
                 attr.precisionList.append(precision)
         attr.refresh_dict()

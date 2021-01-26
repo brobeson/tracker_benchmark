@@ -44,12 +44,12 @@ def get_overlap_graph(scoreList, fignum, evalType, testname):
                     ls = '--'
                 ave = sum(attr.successRateList) / float(len(attr.successRateList))
                 plt.plot(thresholdSetOverlap, attr.successRateList, 
-                    c = LINE_COLORS[i], label='{0} [{1:.2f}]'.format(tracker, ave), lw=2.0, ls = ls)
+                    c = LINE_COLORS[i], label='[{1:.2f}] {0}'.format(tracker, ave), lw=2.0, ls = ls)
             else:
                 plt.plot(thresholdSetOverlap, attr.successRateList, 
                     label='', alpha=0.5, c='#202020', ls='--')
         else:
-            print 'err'
+            print('err')
     plt.title('{0}_{1} (sequence average)'.format(evalType, testname.upper()))
     plt.rcParams.update({'axes.titlesize': 'medium'})
     plt.xlabel('Thresholds')
@@ -80,7 +80,7 @@ def get_precision_graph(scoreList, fignum, evalType, testname):
                 plt.plot(thresholdSetError, attr.precisionList, 
                     label='', alpha=0.5, c='#202020', ls='--')
         else:
-            print 'err'
+            print('err')
     plt.title('{0}_{1} (precision)'.format(evalType, testname.upper()))
     plt.rcParams.update({'axes.titlesize': 'medium'})
     plt.xlabel('Thresholds')
