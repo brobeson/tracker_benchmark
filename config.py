@@ -18,7 +18,9 @@ SEQ_SRC = os.path.expanduser("~/Videos/otb/")
 
 TRACKER_SRC = './trackers/'
 
-RESULT_SRC = './results/{0}/' # '{0} : OPE, SRE, TRE'
+# RESULT_SRC = './results/{0}/' # '{0} : OPE, SRE, TRE'
+RESULT_SRC = './supplemental_results/{0}/' # '{0} : OPE, SRE, TRE'
+# RESULT_SRC = os.path.expanduser("~/Downloads/OTB/")
 
 SETUP_SEQ = True
 
@@ -50,7 +52,7 @@ thresholdSetOverlap = [x/float(20) for x in range(21)]
 thresholdSetError = range(0, 51)
 
 # for drawing plot
-MAXIMUM_LINES = 10
+MAXIMUM_LINES = 13
 LINE_COLORS = ['b','g','r','c','m','y','k', '#880015', '#FF7F27', '#00A2E8']
 
 m = None    # matlab engine

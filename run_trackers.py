@@ -10,6 +10,7 @@ import scripts.butil.seq_config
 import scripts.butil.load_results
 import scripts.butil.eval_results
 import scripts.bscripts.run_MDNet
+import scripts.bscripts.run_newMDNet
 import scripts.bscripts.run_vital
 import scripts.bscripts.run_tmft
 from scripts.model.result import Result
