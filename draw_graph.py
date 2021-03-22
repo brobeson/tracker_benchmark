@@ -1,3 +1,4 @@
+import argparse
 import matplotlib.pyplot as plt
 import os
 import numpy as np
@@ -8,8 +9,8 @@ import config
 from scripts.butil import load_results, graphs
 
 def main():
+    arguments = parse_command_line()
     evalTypes = ['OPE']
-    testname = 'tb100'
     graph = 'overlap'
     if len(sys.argv) >= 2:
         graph = sys.argv[1]
@@ -21,14 +22,22 @@ def main():
         tracker_colors = graphs.get_color_table(trackers)
         scoreList = []
         for t in trackers:
-            score = load_results.load_scores(evalType, t, testname)
+            score = load_results.load_scores(evalType, t, arguments.testname)
             scoreList.append(score)
         if graph == 'precision':
-            plt = get_precision_graph(scoreList, i, evalType, testname)
+            plt = get_precision_graph(scoreList, i, evalType, arguments.testname)
         else:
-            plt = get_overlap_graph(scoreList, i, evalType, testname,
+            plt = get_overlap_graph(scoreList, i, evalType, arguments.testname,
                     tracker_colors)
     plt.show()
+
+
+def parse_command_line() -> argparse.Namespace:
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("testname", help="The name of the test to graph")
+    arguments = parser.parse_args()
+    return arguments
 
 
 def get_overlap_graph(scoreList, fignum, evalType, testname, tracker_colors):
