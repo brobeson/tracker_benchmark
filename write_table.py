@@ -118,7 +118,7 @@ def _extract_table(scores, metric: str, table: scripts.butil.tables.Table):
                 table.set_value(
                     category.name,
                     category.tracker,
-                    round(statistics.fmean(category.successRateList), 2),
+                    round(statistics.mean(category.successRateList), 2),
                 )
     else:
         for tracker in scores:
